@@ -1,338 +1,377 @@
+// Atalho para selecionar elementos da página.
+const $ = (selector) => document.querySelector(selector)
+
 // ========================================
-// CADASTRO DE PROJETOS
+// PROJETOS E PESQUISA
 // ========================================
 
-// Elementos do cadastro
-const modal = document.querySelector('#project-modal')
-const form = document.querySelector('#project-form')
-const openButton = document.querySelector('#new-project-button')
-const closeButton = document.querySelector('#close-modal')
-const saveButton = document.querySelector('#save-project')
+const projects = [
+  {
+    name: 'Plataforma TechFlow',
+    owner: 'Artur',
+    category: 'Desenvolvimento',
+    priority: 'Alta',
+    deadline: '2026-11-30',
+    description: 'Plataforma para organizar projetos, equipes e indicadores.',
+    progress: 65,
+  },
+  {
+    name: 'Nova identidade visual',
+    owner: 'Bruno',
+    category: 'Design',
+    priority: 'Média',
+    deadline: '2026-11-15',
+    description: 'Atualização das cores, tipografia e componentes da marca.',
+    progress: 40,
+  },
+  {
+    name: 'Campanha de lançamento',
+    owner: 'João Pedro',
+    category: 'Marketing',
+    priority: 'Alta',
+    deadline: '2026-11-20',
+    description: 'Planejamento de conteúdo para divulgar a plataforma.',
+    progress: 25,
+  },
+  {
+    name: 'Migração para a nuvem',
+    owner: 'Arthur',
+    category: 'Infraestrutura',
+    priority: 'Média',
+    deadline: '2026-11-10',
+    description: 'Migração dos serviços para um ambiente mais disponível.',
+    progress: 80,
+  },
+  {
+    name: 'Landing page',
+    owner: 'Bruno',
+    category: 'Design',
+    priority: 'Baixa',
+    deadline: '2026-10-01',
+    description: 'Página de apresentação dos serviços da empresa.',
+    progress: 100,
+  },
+  {
+    name: 'Revisão de acessos',
+    owner: 'Artur',
+    category: 'Segurança',
+    priority: 'Alta',
+    deadline: '2026-10-03',
+    description: 'Revisão das permissões e dos acessos da equipe.',
+    progress: 100,
+  },
+]
 
-const projectList = document.querySelector('#project-list')
-const successMessage = document.querySelector('#project-success')
-const activeProjects = document.querySelector('#active-projects')
-
-// Seleciona apenas os campos que possuem o atributo name.
-const fields = Array.from(form.elements).filter((field) => field.name)
-
-// Retorna a data local no formato AAAA-MM-DD.
-function getToday() {
-    const today = new Date()
-    const year = today.getFullYear()
-    const month = String(today.getMonth() + 1).padStart(2, '0')
-    const day = String(today.getDate()).padStart(2, '0')
-
-    return `${year}-${month}-${day}`
+// Ignora acentos e diferenças entre maiúsculas e minúsculas.
+function normalize(text) {
+  return text.normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
 }
 
-// Define o erro de cada campo.
-function getError(field) {
-    const value = field.value.trim()
+// Uma única função cria os cards iniciais e os novos.
+function createCard(project, index) {
+  const card = document.createElement('article')
 
-    if (!value) {
-        return 'Preencha este campo.'
-    }
+  card.className =
+    'group flex min-w-0 flex-col rounded-xl border border-slate-200 bg-white p-5 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800'
 
-    if (field.name === 'name' && value.length < 3) {
-        return 'Digite pelo menos 3 caracteres.'
-    }
+  // Tamanhos diferentes exigidos pelo CP.
+  if (index === 0) card.classList.add('md:row-span-2')
+  if (index === 3) card.classList.add('xl:col-span-2')
 
-    if (field.name === 'description' && value.length < 10) {
-        return 'Digite pelo menos 10 caracteres.'
-    }
-
-    if (field.name === 'deadline' && value < getToday()) {
-        return 'Escolha hoje ou uma data futura.'
-    }
-
-    return ''
-}
-
-// Exibe a mensagem de erro e altera a borda do campo.
-function validateField(field) {
-    const error = getError(field)
-    const message = document.querySelector(`#${field.name}-error`)
-
-    field.classList.remove(
-        'border-slate-300',
-        'border-red-500',
-        'border-emerald-500'
-    )
-
-    field.classList.add(error ? 'border-red-500' : 'border-emerald-500')
-    field.setAttribute('aria-invalid', String(Boolean(error)))
-
-    message.textContent = error
-    message.classList.toggle('hidden', !error)
-
-    return !error
-}
-
-// Limpa os campos e os estados de validação.
-function resetForm() {
-    form.reset()
-
-    fields.forEach((field) => {
-        field.classList.remove('border-red-500', 'border-emerald-500')
-        field.classList.add('border-slate-300')
-        field.removeAttribute('aria-invalid')
-
-        const message = document.querySelector(`#${field.name}-error`)
-        message.textContent = ''
-        message.classList.add('hidden')
-    })
-}
-
-// Monta o card de um novo projeto.
-function addProject(project) {
-    const card = document.createElement('article')
-
-    card.className =
-        'group flex flex-col rounded-xl border border-slate-200 bg-white p-6 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg'
-
-    // A estrutura é fixa; os dados são inseridos com textContent.
-    card.innerHTML = `
-    <div class="flex flex-wrap items-center justify-between gap-2">
-      <span
-        data-category
-        class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700"
-      ></span>
-
-      <span
-        data-priority
-        class="text-xs font-semibold text-slate-600"
-      ></span>
+  // Estrutura fixa: os dados do usuário entram com textContent.
+  card.innerHTML = `
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+      <span data-category class="rounded-full bg-indigo-100 px-3 py-1 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"></span>
+      <span data-status class="text-slate-500 dark:text-slate-400"></span>
     </div>
 
-    <h3
-      data-name
-      class="mt-4 break-words text-lg font-bold transition-colors group-hover:text-indigo-600"
-    ></h3>
+    <h3 data-name class="mt-4 break-words text-lg font-bold transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400"></h3>
 
-    <p
-      data-description
-      class="mt-2 break-words text-sm text-slate-500"
-    ></p>
+    <p data-description class="mt-2 break-words text-sm text-slate-500 dark:text-slate-400"></p>
+
+    <p data-priority class="mt-4 text-xs text-slate-500 dark:text-slate-400"></p>
 
     <div class="mt-auto pt-5">
       <div class="flex items-center justify-between text-sm">
-        <span class="text-slate-500">Progresso</span>
-        <span class="font-semibold">0%</span>
+        <span>Progresso</span>
+        <span data-percent></span>
       </div>
 
-      <div
-        data-progress
-        role="progressbar"
-        aria-valuenow="0"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100"
-      >
-        <div class="h-full w-0 rounded-full bg-indigo-500"></div>
+      <div data-progress role="progressbar" aria-valuemin="0" aria-valuemax="100" class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
+        <div data-bar class="h-full rounded-full bg-indigo-500"></div>
       </div>
 
-      <div class="mt-4 flex flex-wrap justify-between gap-2 text-xs text-slate-500">
+      <div class="mt-4 flex flex-wrap justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
         <span data-owner class="break-words"></span>
         <span data-deadline></span>
       </div>
     </div>
   `
 
-    card.querySelector('[data-name]').textContent = project.name
-    card.querySelector('[data-category]').textContent = project.category
+  const texts = {
+    category: project.category,
+    status: project.progress === 100 ? 'Concluído' : 'Em andamento',
+    name: project.name,
+    description: project.description,
+    priority: `Prioridade: ${project.priority}`,
+    percent: `${project.progress}%`,
+    owner: `Responsável: ${project.owner}`,
+    deadline: `Prazo: ${project.deadline.split('-').reverse().join('/')}`,
+  }
 
-    card.querySelector('[data-priority]').textContent =
-        `Prioridade ${project.priority}`
+  for (const [key, value] of Object.entries(texts)) {
+    card.querySelector(`[data-${key}]`).textContent = value
+  }
 
-    card.querySelector('[data-description]').textContent =
-        project.description
+  card.querySelector('[data-bar]').style.width = `${project.progress}%`
 
-    card.querySelector('[data-owner]').textContent =
-        `Responsável: ${project.owner}`
+  const progress = card.querySelector('[data-progress]')
+  progress.setAttribute('aria-valuenow', project.progress)
+  progress.setAttribute('aria-label', `Progresso de ${project.name}`)
 
-    const formattedDate = project.deadline.split('-').reverse().join('/')
-
-    card.querySelector('[data-deadline]').textContent =
-        `Prazo: ${formattedDate}`
-
-    card.querySelector('[data-progress]').setAttribute(
-        'aria-label',
-        `Progresso de ${project.name}`
-    )
-
-    projectList.append(card)
-
-    // Novos projetos começam como ativos.
-    activeProjects.textContent = Number(activeProjects.textContent) + 1
+  return card
 }
 
-// Abre o modal de cadastro.
-openButton.addEventListener('click', () => {
-    resetForm()
-    successMessage.classList.add('hidden')
-    form.elements.deadline.min = getToday()
-    modal.showModal()
+// Atualiza a lista conforme a pesquisa.
+function renderProjects() {
+  const list = $('#project-list')
+  const term = normalize($('#search').value)
+  let count = 0
+
+  list.replaceChildren()
+
+  projects.forEach((project, index) => {
+    const text = normalize(Object.values(project).join(' '))
+
+    if (text.includes(term)) {
+      list.append(createCard(project, index))
+      count++
+    }
+  })
+
+  $('#empty').classList.toggle('hidden', count > 0)
+
+  $('#active-count').textContent =
+    projects.filter((project) => project.progress < 100).length
+}
+
+$('#search').addEventListener('input', renderProjects)
+renderProjects()
+
+// ========================================
+// MODAL E VALIDAÇÃO
+// ========================================
+
+const modal = $('#modal')
+const form = $('#project-form')
+const fields = Array.from(form.elements).filter((field) => field.name)
+
+// Data local no formato usado pelo campo date.
+function today() {
+  const date = new Date()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${date.getFullYear()}-${month}-${day}`
+}
+
+$('#new-project').addEventListener('click', () => {
+  form.reset()
+  $('#success').classList.add('hidden')
+
+  fields.forEach((field) => {
+    field.classList.remove('border-red-500', 'border-emerald-500')
+    field.classList.add('border-slate-400')
+    field.removeAttribute('aria-invalid')
+    $(`#${field.name}-error`).textContent = ''
+  })
+
+  $('#deadline').min = today()
+  modal.showModal()
 })
 
-// Fecha o modal.
-closeButton.addEventListener('click', () => {
-    modal.close()
-})
+$('#close-modal').addEventListener('click', () => modal.close())
 
-// Valida ao sair do campo e ao corrigir um erro.
+// Retorna true quando o campo está válido.
+function validate(field) {
+  const value = field.value.trim()
+  let error = ''
+
+  if (!value) {
+    error = 'Preencha este campo.'
+  } else if (field.minLength > 0 && value.length < field.minLength) {
+    error = `Digite pelo menos ${field.minLength} caracteres.`
+  } else if (field.name === 'deadline' && value < today()) {
+    error = 'Escolha hoje ou uma data futura.'
+  }
+
+  field.classList.remove(
+    'border-slate-400',
+    'border-red-500',
+    'border-emerald-500'
+  )
+
+  field.classList.add(error ? 'border-red-500' : 'border-emerald-500')
+  field.setAttribute('aria-invalid', String(Boolean(error)))
+  $(`#${field.name}-error`).textContent = error
+
+  return !error
+}
+
 fields.forEach((field) => {
-    field.addEventListener('blur', () => {
-        validateField(field)
-    })
+  field.addEventListener('blur', () => validate(field))
 
-    field.addEventListener('input', () => {
-        if (field.getAttribute('aria-invalid') === 'true') {
-            validateField(field)
-        }
-    })
+  field.addEventListener('input', () => {
+    if (field.hasAttribute('aria-invalid')) validate(field)
+  })
 })
 
-// Envio do formulário.
 form.addEventListener('submit', (event) => {
-    event.preventDefault()
+  event.preventDefault()
 
-    // map valida todos os campos, mesmo se algum estiver incorreto.
-    const results = fields.map((field) => validateField(field))
-    const isValid = results.every(Boolean)
+  const valid = fields.map(validate).every(Boolean)
 
-    if (!isValid) {
-        const firstInvalid = fields.find(
-            (field) => field.getAttribute('aria-invalid') === 'true'
-        )
+  if (!valid) {
+    fields.find((field) => field.getAttribute('aria-invalid') === 'true').focus()
+    return
+  }
 
-        firstInvalid.focus()
-        return
+  const button = $('#save-project')
+  button.disabled = true
+
+  try {
+    const project = Object.fromEntries(new FormData(form))
+
+    for (const key in project) {
+      project[key] = project[key].trim()
     }
 
-    saveButton.disabled = true
+    project.progress = 0
+    projects.push(project)
+    renderProjects()
+    modal.close()
 
-    try {
-        const project = Object.fromEntries(new FormData(form))
-
-        Object.keys(project).forEach((key) => {
-            project[key] = project[key].trim()
-        })
-
-        addProject(project)
-        modal.close()
-
-        successMessage.textContent =
-            `Projeto "${project.name}" cadastrado com sucesso!`
-
-        successMessage.classList.remove('hidden')
-        resetForm()
-    } finally {
-        saveButton.disabled = false
-    }
+    $('#success').textContent = `Projeto "${project.name}" cadastrado!`
+    $('#success').classList.remove('hidden')
+  } finally {
+    button.disabled = false
+  }
 })
 
 // ========================================
-// SIDEBAR MOBILE
+// SIDEBAR E DROPDOWN
 // ========================================
 
-const sidebar = document.querySelector('#sidebar')
-const menuButton = document.querySelector('#menu-button')
-const sidebarOverlay = document.querySelector('#sidebar-overlay')
-const desktopScreen = window.matchMedia('(min-width: 64rem)')
+const sidebar = $('#sidebar')
+const menuButton = $('#menu-button')
+const desktop = window.matchMedia('(min-width: 64rem)')
 
-// No celular, impede que links da sidebar fechada recebam foco.
-sidebar.inert = !desktopScreen.matches
+function setSidebar(open) {
+  sidebar.classList.toggle('-translate-x-full', !open)
+  $('#overlay').classList.toggle('hidden', !open)
+  document.body.classList.toggle('overflow-hidden', open)
+  menuButton.setAttribute('aria-expanded', String(open))
 
-function toggleSidebar(open) {
-    sidebar.classList.toggle('-translate-x-full', !open)
-    sidebarOverlay.classList.toggle('hidden', !open)
-    sidebar.inert = !desktopScreen.matches && !open
+  // Impede foco no menu quando ele está fechado no celular.
+  sidebar.inert = !desktop.matches && !open
 
-    menuButton.setAttribute('aria-expanded', String(open))
-    menuButton.setAttribute(
-        'aria-label',
-        open ? 'Fechar menu' : 'Abrir menu'
-    )
-
-    document.body.classList.toggle('overflow-hidden', open)
-
-    if (open) {
-        sidebar.querySelector('a').focus()
-    }
+  if (open) sidebar.querySelector('a').focus()
 }
 
-// Alterna entre abrir e fechar.
+setSidebar(false)
+
 menuButton.addEventListener('click', () => {
-    const isOpen = menuButton.getAttribute('aria-expanded') === 'true'
-    toggleSidebar(!isOpen)
+  setSidebar(menuButton.getAttribute('aria-expanded') !== 'true')
 })
 
-// Fecha ao clicar no fundo.
-sidebarOverlay.addEventListener('click', () => {
-    toggleSidebar(false)
-    menuButton.focus()
+$('#overlay').addEventListener('click', () => {
+  setSidebar(false)
+  menuButton.focus()
 })
 
-// Fecha ao escolher um link no celular.
 sidebar.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-        if (!desktopScreen.matches) {
-            toggleSidebar(false)
-            menuButton.focus()
-        }
-    })
+  link.addEventListener('click', () => {
+    if (!desktop.matches) {
+      setSidebar(false)
+      menuButton.focus()
+    }
+  })
 })
 
-// Ajusta o estado ao mudar entre desktop e mobile.
-desktopScreen.addEventListener('change', () => {
-    toggleSidebar(false)
-})
+desktop.addEventListener('change', () => setSidebar(false))
 
-// ========================================
-// DROPDOWN DO USUÁRIO
-// ========================================
-
-const userArea = document.querySelector('#user-area')
-const userButton = document.querySelector('#user-button')
-const userDropdown = document.querySelector('#user-dropdown')
-
-function toggleDropdown(open) {
-    userDropdown.classList.toggle('hidden', !open)
-    userButton.setAttribute('aria-expanded', String(open))
+function setDropdown(open) {
+  $('#user-dropdown').classList.toggle('hidden', !open)
+  $('#user-button').setAttribute('aria-expanded', String(open))
 }
 
-userButton.addEventListener('click', () => {
-    const isOpen = userButton.getAttribute('aria-expanded') === 'true'
-    toggleDropdown(!isOpen)
+$('#user-button').addEventListener('click', () => {
+  const open = $('#user-button').getAttribute('aria-expanded') === 'true'
+  setDropdown(!open)
 })
 
-// Fecha ao clicar fora.
 document.addEventListener('click', (event) => {
-    if (!userArea.contains(event.target)) {
-        toggleDropdown(false)
-    }
+  if (!$('#user-area').contains(event.target)) setDropdown(false)
 })
 
-// Fecha quando o foco sai da área do usuário.
-userArea.addEventListener('focusout', (event) => {
-    if (!userArea.contains(event.relatedTarget)) {
-        toggleDropdown(false)
-    }
+$('#user-area').addEventListener('focusout', (event) => {
+  if (!$('#user-area').contains(event.relatedTarget)) setDropdown(false)
 })
 
-// Esc fecha os menus.
-// O dialog já possui seu próprio fechamento com Esc.
 document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || modal.open) return
+  if (event.key !== 'Escape' || modal.open) return
 
-    if (menuButton.getAttribute('aria-expanded') === 'true') {
-        toggleSidebar(false)
-        menuButton.focus()
-    }
+  if (menuButton.getAttribute('aria-expanded') === 'true') {
+    setSidebar(false)
+    menuButton.focus()
+  }
 
-    if (userButton.getAttribute('aria-expanded') === 'true') {
-        toggleDropdown(false)
-        userButton.focus()
-    }
+  if ($('#user-button').getAttribute('aria-expanded') === 'true') {
+    setDropdown(false)
+    $('#user-button').focus()
+  }
 })
+
+// ========================================
+// TEMAS E LOCALSTORAGE
+// ========================================
+
+const theme = $('#theme')
+const system = window.matchMedia('(prefers-color-scheme: dark)')
+
+theme.value = 'system'
+
+try {
+  const saved = localStorage.getItem('techflow-theme')
+
+  if (['light', 'dark', 'system'].includes(saved)) {
+    theme.value = saved
+  }
+} catch {
+  // Mantém Sistema se o armazenamento estiver indisponível.
+}
+
+function applyTheme() {
+  const dark =
+    theme.value === 'dark' ||
+    (theme.value === 'system' && system.matches)
+
+  document.documentElement.classList.toggle('dark', dark)
+  document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+}
+
+theme.addEventListener('change', () => {
+  applyTheme()
+
+  try {
+    localStorage.setItem('techflow-theme', theme.value)
+  } catch {
+    // A troca de tema continua funcionando nesta sessão.
+  }
+})
+
+system.addEventListener('change', applyTheme)
+applyTheme()

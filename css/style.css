@@ -1,1 +1,4 @@
 @import "tailwindcss";
+
+/* Permite controlar o modo escuro pela classe dark no HTML. */
+@custom-variant dark (&:where(.dark, .dark *));

@@ -1,457 +1,299 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechFlow — Dashboard</title>
-    <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechFlow Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="min-h-screen bg-slate-100 text-slate-800">
-    <div class="min-h-screen lg:flex">
+<body class="min-h-screen bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100">
 
-        <!-- Sidebar -->
-        <aside id="sidebar"
-            class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-slate-900 p-6 text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0">
-            <a href="./" class="text-2xl font-bold text-indigo-400">
-                TechFlow
-            </a>
+  <div class="min-h-screen lg:flex">
 
-            <p class="mt-2 text-sm text-slate-400">
-                Gestão de projetos
-            </p>
+    <!-- Sidebar: fixa no celular e ao lado do conteúdo no desktop -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-40 flex w-60 -translate-x-full flex-col bg-slate-900 p-6 text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0"
+    >
+      <h2 class="text-2xl font-bold text-indigo-400">TechFlow</h2>
+      <p class="mt-2 text-sm text-slate-400">Gestão de projetos</p>
 
-            <nav aria-label="Menu principal" class="mt-10 flex flex-col gap-2">
-                <a href="#dashboard" aria-current="page"
-                    class="rounded-lg bg-indigo-600 px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                    Dashboard
-                </a>
+      <nav class="mt-8 flex flex-col gap-2" aria-label="Menu principal">
+        <a
+          href="#dashboard"
+          class="rounded-lg bg-indigo-600 p-3 transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        >
+          Dashboard
+        </a>
 
-                <a href="#projetos"
-                    class="rounded-lg px-4 py-3 transition-colors duration-200 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                    Projetos
-                </a>
-            </nav>
+        <a
+          href="#projetos"
+          class="rounded-lg p-3 transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        >
+          Projetos
+        </a>
+      </nav>
 
-            <p class="mt-auto pt-8 text-xs text-slate-400">
-                TechFlow © 2026
-            </p>
-        </aside>
+      <p class="mt-auto pt-6 text-xs text-slate-400">TechFlow © 2026</p>
+    </aside>
 
-        <!-- Fundo do menu mobile -->
-        <button id="sidebar-overlay" type="button" aria-label="Fechar menu"
-            class="fixed inset-0 z-30 hidden bg-black/50 lg:hidden"></button>
+    <button
+      id="overlay"
+      type="button"
+      aria-label="Fechar menu"
+      class="fixed inset-0 z-30 hidden bg-black/50 lg:hidden"
+    ></button>
 
-        <div class="min-w-0 flex-1">
+    <div class="min-w-0 flex-1">
 
-            <!-- Navbar -->
-            <header
-                class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 py-4 sm:px-6 lg:px-8">
-                <div class="flex items-center gap-3">
-                    <button id="menu-button" type="button" aria-label="Abrir menu" aria-controls="sidebar"
-                        aria-expanded="false"
-                        class="rounded-lg p-2 transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 active:bg-slate-200 lg:hidden">
-                        ☰
-                    </button>
+      <!-- Navbar -->
+      <header class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white p-4 sm:px-6 dark:border-slate-700 dark:bg-slate-800">
+        <div class="flex items-center gap-3">
+          <button
+            id="menu-button"
+            type="button"
+            aria-label="Abrir menu"
+            aria-controls="sidebar"
+            aria-expanded="false"
+            class="rounded-lg p-2 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 lg:hidden dark:hover:bg-slate-700"
+          >
+            ☰
+          </button>
 
-                    <span class="text-lg font-bold lg:hidden">TechFlow</span>
-                    <span class="hidden font-semibold lg:block">
-                        Painel de controle
-                    </span>
-                </div>
-
-                <!-- Usuário e dropdown -->
-                <div id="user-area" class="relative">
-                    <button id="user-button" type="button" aria-controls="user-dropdown" aria-expanded="false"
-                        class="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <span
-                            class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 font-bold text-indigo-700">
-                            AM
-                        </span>
-
-                        <span class="hidden text-left sm:block">
-                            <span class="block text-sm font-semibold">Artur Maia</span>
-                            <span class="block text-xs text-slate-500">Administrador</span>
-                        </span>
-
-                        <span aria-hidden="true">▾</span>
-                    </button>
-
-                    <div id="user-dropdown"
-                        class="absolute right-0 z-20 mt-2 hidden w-60 rounded-xl border border-slate-200 bg-white p-4 shadow-lg">
-                        <p class="text-sm font-semibold">Artur Maia</p>
-                        <p class="mt-1 text-xs text-slate-500">
-                            Administrador da TechFlow
-                        </p>
-
-                        <div class="mt-4 border-t border-slate-200 pt-3">
-                            <label for="theme-select" class="block text-sm font-medium">
-                                Tema
-                            </label>
-
-                            <select id="theme-select"
-                                class="mt-2 w-full rounded-lg border border-slate-300 bg-white p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                <option value="light">Claro</option>
-                                <option value="dark">Escuro</option>
-                                <option value="system" selected>Sistema</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Campo de pesquisa -->
-                <div class="w-full md:w-72">
-                    <label for="search" class="sr-only">Pesquisar projetos</label>
-                    <input id="search" type="search" placeholder="Pesquisar projetos..."
-                        class="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2 text-sm transition-colors focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
-                </div>
-            </header>
-
-            <main id="dashboard" class="mx-auto max-w-screen-2xl p-4 sm:p-6 lg:p-8 2xl:p-10">
-                <!-- Título -->
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 class="text-2xl font-bold sm:text-3xl">Visão geral</h1>
-                        <p class="mt-1 text-sm text-slate-500">
-                            Acompanhe os projetos e os indicadores da sua equipe.
-                        </p>
-                    </div>
-
-                    <button id="new-project-button" type="button"
-                        class="rounded-lg bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 ease-in-out hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:scale-95">
-                        + Novo projeto
-                    </button>
-                </div>
-
-                <!-- Mensagem de sucesso -->
-                <p id="project-success" role="status"
-                    class="mt-4 hidden rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-700">
-                </p>
-
-                <!-- Indicadores -->
-                <section aria-label="Indicadores" class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <article class="rounded-xl border border-slate-200 bg-white p-5">
-                        <h2 class="text-sm font-medium text-slate-500">Projetos ativos</h2>
-                        <p id="active-projects" class="mt-3 text-3xl font-bold text-indigo-600">4</p>
-                        <p class="mt-2 text-xs text-slate-500">Em desenvolvimento</p>
-                    </article>
-
-                    <article class="rounded-xl border border-slate-200 bg-white p-5">
-                        <h2 class="text-sm font-medium text-slate-500">Projetos concluídos</h2>
-                        <p class="mt-3 text-3xl font-bold text-emerald-600">2</p>
-                        <p class="mt-2 text-xs text-slate-500">Entregas finalizadas</p>
-                    </article>
-
-                    <article class="rounded-xl border border-slate-200 bg-white p-5">
-                        <h2 class="text-sm font-medium text-slate-500">Tarefas pendentes</h2>
-                        <p class="mt-3 text-3xl font-bold text-amber-600">18</p>
-                        <p class="mt-2 text-xs text-slate-500">Aguardando conclusão</p>
-                    </article>
-
-                    <article class="rounded-xl border border-slate-200 bg-white p-5">
-                        <h2 class="text-sm font-medium text-slate-500">Equipes</h2>
-                        <p class="mt-3 text-3xl font-bold text-sky-600">3</p>
-                        <p class="mt-2 text-xs text-slate-500">Trabalhando nos projetos</p>
-                    </article>
-                </section>
-
-                <!-- Projetos -->
-                <section id="projetos" class="mt-8">
-                    <h2 class="text-xl font-bold">Projetos</h2>
-                    <p class="mt-1 text-sm text-slate-500">
-                        Confira o andamento de cada projeto.
-                    </p>
-
-                    <div id="project-list" class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        <!-- Projeto 1: duas linhas -->
-                        <article
-                            class="group flex flex-col rounded-xl border border-slate-200 bg-white p-6 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg md:row-span-2">
-                            <div class="flex flex-wrap items-center justify-between gap-2">
-                                <span
-                                    class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
-                                    Desenvolvimento
-                                </span>
-                                <span class="text-xs font-semibold text-red-600">Prioridade alta</span>
-                            </div>
-
-                            <h3 class="mt-4 text-xl font-bold transition-colors group-hover:text-indigo-600">
-                                Plataforma TechFlow
-                            </h3>
-                            <p class="mt-2 text-sm text-slate-500">
-                                Desenvolvimento da plataforma para centralizar projetos,
-                                organizar equipes e acompanhar indicadores.
-                            </p>
-
-                            <div class="mt-6 rounded-lg bg-slate-50 p-4">
-                                <h4 class="text-sm font-semibold">Próximas entregas</h4>
-                                <ul class="mt-3 list-inside list-disc space-y-2 text-sm text-slate-600">
-                                    <li>Finalizar o dashboard</li>
-                                    <li>Implementar cadastro de projetos</li>
-                                    <li>Testar a interface no celular</li>
-                                </ul>
-                            </div>
-
-                            <div class="mt-auto pt-6">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-slate-500">Progresso</span>
-                                    <span class="font-semibold">65%</span>
-                                </div>
-                                <div role="progressbar" aria-label="Progresso da Plataforma TechFlow" aria-valuenow="65"
-                                    aria-valuemin="0" aria-valuemax="100"
-                                    class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
-                                    <div class="h-full w-[65%] rounded-full bg-indigo-500"></div>
-                                </div>
-                                <div class="mt-4 flex flex-wrap justify-between gap-2 text-xs text-slate-500">
-                                    <span>Responsável: Artur</span>
-                                    <span>Prazo: 30/11/2026</span>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Projeto 2 -->
-                        <article
-                            class="group flex flex-col rounded-xl border border-slate-200 bg-white p-6 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg">
-                            <div class="flex flex-wrap items-center justify-between gap-2">
-                                <span
-                                    class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">Design</span>
-                                <span class="text-xs font-semibold text-amber-600">Prioridade média</span>
-                            </div>
-                            <h3 class="mt-4 text-lg font-bold transition-colors group-hover:text-indigo-600">
-                                Nova identidade visual
-                            </h3>
-                            <p class="mt-2 text-sm text-slate-500">
-                                Atualização das cores, tipografia e componentes da marca.
-                            </p>
-                            <div class="mt-auto pt-5">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-slate-500">Progresso</span>
-                                    <span class="font-semibold">40%</span>
-                                </div>
-                                <div role="progressbar" aria-label="Progresso da Nova identidade visual"
-                                    aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"
-                                    class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
-                                    <div class="h-full w-[40%] rounded-full bg-sky-500"></div>
-                                </div>
-                                <div class="mt-4 flex flex-wrap justify-between gap-2 text-xs text-slate-500">
-                                    <span>Responsável: Bruno</span>
-                                    <span>Prazo: 15/11/2026</span>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Projeto 3 -->
-                        <article
-                            class="group flex flex-col rounded-xl border border-slate-200 bg-white p-6 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg">
-                            <div class="flex flex-wrap items-center justify-between gap-2">
-                                <span
-                                    class="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-700">Marketing</span>
-                                <span class="text-xs font-semibold text-red-600">Prioridade alta</span>
-                            </div>
-                            <h3 class="mt-4 text-lg font-bold transition-colors group-hover:text-indigo-600">
-                                Campanha de lançamento
-                            </h3>
-                            <p class="mt-2 text-sm text-slate-500">
-                                Planejamento de conteúdo para divulgar a nova plataforma.
-                            </p>
-                            <div class="mt-auto pt-5">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-slate-500">Progresso</span>
-                                    <span class="font-semibold">25%</span>
-                                </div>
-                                <div role="progressbar" aria-label="Progresso da Campanha de lançamento"
-                                    aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"
-                                    class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
-                                    <div class="h-full w-[25%] rounded-full bg-violet-500"></div>
-                                </div>
-                                <div class="mt-4 flex flex-wrap justify-between gap-2 text-xs text-slate-500">
-                                    <span>Responsável: João Pedro</span>
-                                    <span>Prazo: 20/11/2026</span>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Projeto 4: duas colunas -->
-                        <article
-                            class="group flex flex-col rounded-xl border border-slate-200 bg-white p-6 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg xl:col-span-2">
-                            <div class="flex flex-wrap items-center justify-between gap-2">
-                                <span
-                                    class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">Infraestrutura</span>
-                                <span class="text-xs font-semibold text-amber-600">Prioridade média</span>
-                            </div>
-                            <h3 class="mt-4 text-lg font-bold transition-colors group-hover:text-indigo-600">
-                                Migração para a nuvem
-                            </h3>
-                            <p class="mt-2 text-sm text-slate-500">
-                                Organização dos serviços e migração da infraestrutura
-                                para um ambiente com maior disponibilidade.
-                            </p>
-                            <div class="mt-auto pt-5">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-slate-500">Progresso</span>
-                                    <span class="font-semibold">80%</span>
-                                </div>
-                                <div role="progressbar" aria-label="Progresso da Migração para a nuvem"
-                                    aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"
-                                    class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
-                                    <div class="h-full w-[80%] rounded-full bg-amber-500"></div>
-                                </div>
-                                <div class="mt-4 flex flex-wrap justify-between gap-2 text-xs text-slate-500">
-                                    <span>Responsável: Arthur</span>
-                                    <span>Prazo: 10/11/2026</span>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Projeto 5 -->
-                        <article
-                            class="group flex flex-col rounded-xl border border-slate-200 bg-white p-6 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg">
-                            <div class="flex flex-wrap items-center justify-between gap-2">
-                                <span
-                                    class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Concluído</span>
-                                <span class="text-xs text-slate-500">Design</span>
-                            </div>
-                            <h3 class="mt-4 text-lg font-bold transition-colors group-hover:text-indigo-600">
-                                Landing page
-                            </h3>
-                            <p class="mt-2 text-sm text-slate-500">
-                                Página de apresentação dos serviços da empresa.
-                            </p>
-                            <div class="mt-auto pt-5">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-slate-500">Progresso</span>
-                                    <span class="font-semibold">100%</span>
-                                </div>
-                                <div role="progressbar" aria-label="Progresso da Landing page" aria-valuenow="100"
-                                    aria-valuemin="0" aria-valuemax="100"
-                                    class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
-                                    <div class="h-full w-full rounded-full bg-emerald-500"></div>
-                                </div>
-                                <div class="mt-4 flex flex-wrap justify-between gap-2 text-xs text-slate-500">
-                                    <span>Responsável: Bruno</span>
-                                    <span>Prazo: 01/10/2026</span>
-                                </div>
-                            </div>
-                        </article>
-
-                        <!-- Projeto 6 -->
-                        <article
-                            class="group flex flex-col rounded-xl border border-slate-200 bg-white p-6 transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg">
-                            <div class="flex flex-wrap items-center justify-between gap-2">
-                                <span
-                                    class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Concluído</span>
-                                <span class="text-xs text-slate-500">Segurança</span>
-                            </div>
-                            <h3 class="mt-4 text-lg font-bold transition-colors group-hover:text-indigo-600">
-                                Revisão de acessos
-                            </h3>
-                            <p class="mt-2 text-sm text-slate-500">
-                                Revisão das permissões e organização dos acessos da equipe.
-                            </p>
-                            <div class="mt-auto pt-5">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-slate-500">Progresso</span>
-                                    <span class="font-semibold">100%</span>
-                                </div>
-                                <div role="progressbar" aria-label="Progresso da Revisão de acessos" aria-valuenow="100"
-                                    aria-valuemin="0" aria-valuemax="100"
-                                    class="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
-                                    <div class="h-full w-full rounded-full bg-emerald-500"></div>
-                                </div>
-                                <div class="mt-4 flex flex-wrap justify-between gap-2 text-xs text-slate-500">
-                                    <span>Responsável: Artur</span>
-                                    <span>Prazo: 03/10/2026</span>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                </section>
-            </main>
+          <span class="font-bold">Painel de controle</span>
         </div>
+
+        <input
+          id="search"
+          type="search"
+          aria-label="Pesquisar projetos"
+          placeholder="Pesquisar projetos..."
+          class="order-last w-full rounded-lg border border-slate-300 bg-slate-50 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 md:order-none md:w-64 dark:border-slate-600 dark:bg-slate-900"
+        >
+
+        <!-- Dropdown do usuário -->
+        <div id="user-area" class="relative">
+          <button
+            id="user-button"
+            type="button"
+            aria-controls="user-dropdown"
+            aria-expanded="false"
+            class="flex items-center gap-2 rounded-lg p-2 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:hover:bg-slate-700"
+          >
+            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">
+              AM
+            </span>
+            <span class="hidden text-sm sm:block">Artur Maia</span>
+            <span aria-hidden="true">▾</span>
+          </button>
+
+          <div
+            id="user-dropdown"
+            class="absolute right-0 z-20 mt-2 hidden w-56 rounded-xl border border-slate-200 bg-white p-4 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+          >
+            <p class="font-semibold">Artur Maia</p>
+            <p class="mb-4 text-xs text-slate-500 dark:text-slate-400">
+              Administrador
+            </p>
+
+            <label for="theme" class="text-sm">Tema</label>
+            <select
+              id="theme"
+              class="mt-2 w-full rounded-lg border border-slate-300 bg-white p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900"
+            >
+              <option value="light">Claro</option>
+              <option value="dark">Escuro</option>
+              <option value="system">Sistema</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <main id="dashboard" class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 2xl:p-10">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 class="text-2xl font-bold">Visão geral</h1>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Acompanhe os projetos da sua equipe.
+            </p>
+          </div>
+
+          <button
+            id="new-project"
+            type="button"
+            class="rounded-lg bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 active:scale-95"
+          >
+            + Novo projeto
+          </button>
+        </div>
+
+        <p
+          id="success"
+          role="status"
+          class="mt-4 hidden rounded-lg bg-emerald-100 p-3 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+        ></p>
+
+        <!-- Indicadores -->
+        <section aria-label="Indicadores" class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <article class="rounded-xl bg-white p-5 dark:bg-slate-800">
+            <h2 class="text-sm text-slate-500 dark:text-slate-400">Projetos ativos</h2>
+            <p id="active-count" class="mt-3 text-3xl font-bold text-indigo-600 dark:text-indigo-400">4</p>
+          </article>
+
+          <article class="rounded-xl bg-white p-5 dark:bg-slate-800">
+            <h2 class="text-sm text-slate-500 dark:text-slate-400">Projetos concluídos</h2>
+            <p class="mt-3 text-3xl font-bold text-emerald-600 dark:text-emerald-400">2</p>
+          </article>
+
+          <article class="rounded-xl bg-white p-5 dark:bg-slate-800">
+            <h2 class="text-sm text-slate-500 dark:text-slate-400">Tarefas pendentes</h2>
+            <p class="mt-3 text-3xl font-bold text-amber-600 dark:text-amber-400">18</p>
+          </article>
+
+          <article class="rounded-xl bg-white p-5 dark:bg-slate-800">
+            <h2 class="text-sm text-slate-500 dark:text-slate-400">Equipes</h2>
+            <p class="mt-3 text-3xl font-bold text-sky-600 dark:text-sky-400">3</p>
+          </article>
+        </section>
+
+        <section id="projetos" class="mt-8">
+          <h2 class="text-xl font-bold">Projetos</h2>
+
+          <!-- Os cards são criados pelo JavaScript -->
+          <div
+            id="project-list"
+            class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+          ></div>
+
+          <p id="empty" role="status" class="mt-4 hidden text-sm text-slate-500 dark:text-slate-400">
+            Nenhum projeto encontrado.
+          </p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal de cadastro -->
+  <dialog
+    id="modal"
+    aria-labelledby="modal-title"
+    class="m-auto max-h-[90vh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-xl bg-white p-6 text-slate-800 backdrop:bg-black/60 dark:bg-slate-800 dark:text-slate-100"
+  >
+    <div class="flex items-center justify-between">
+      <h2 id="modal-title" class="text-xl font-bold">Novo projeto</h2>
+
+      <button
+        id="close-modal"
+        type="button"
+        aria-label="Fechar cadastro"
+        class="rounded-lg p-2 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:hover:bg-slate-700"
+      >
+        ✕
+      </button>
     </div>
 
-    <!-- Modal de cadastro -->
-    <dialog id="project-modal" aria-labelledby="modal-title"
-        class="m-auto max-h-[90vh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-xl bg-white p-6 text-slate-800 backdrop:bg-slate-900/60">
-        <div class="flex items-center justify-between gap-4">
-            <h2 id="modal-title" class="text-xl font-bold">Novo projeto</h2>
-            <button id="close-modal" type="button" aria-label="Fechar cadastro"
-                class="rounded-lg px-3 py-1 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                ✕
-            </button>
+    <form id="project-form" class="mt-4 space-y-3" novalidate>
+      <div>
+        <label for="name" class="text-sm">Nome</label>
+        <input
+          id="name"
+          name="name"
+          required
+          minlength="3"
+          aria-describedby="name-error"
+          class="mt-1 w-full rounded-lg border border-slate-400 bg-transparent p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+        <p id="name-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+      </div>
+
+      <div>
+        <label for="owner" class="text-sm">Responsável</label>
+        <input
+          id="owner"
+          name="owner"
+          required
+          aria-describedby="owner-error"
+          class="mt-1 w-full rounded-lg border border-slate-400 bg-transparent p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+        <p id="owner-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label for="category" class="text-sm">Categoria</label>
+          <select
+            id="category"
+            name="category"
+            required
+            aria-describedby="category-error"
+            class="mt-1 w-full rounded-lg border border-slate-400 bg-white p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-slate-800"
+          >
+            <option value="">Selecione</option>
+            <option>Desenvolvimento</option>
+            <option>Design</option>
+            <option>Marketing</option>
+            <option>Infraestrutura</option>
+            <option>Segurança</option>
+          </select>
+          <p id="category-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
         </div>
 
-        <form id="project-form" class="mt-5 space-y-4" novalidate>
-            <div>
-                <label for="project-name" class="block text-sm font-medium">Nome</label>
-                <input id="project-name" name="name" type="text" required minlength="3"
-                    class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    aria-describedby="name-error">
-                <p id="name-error" class="mt-1 hidden text-xs text-red-600"></p>
-            </div>
+        <div>
+          <label for="priority" class="text-sm">Prioridade</label>
+          <select
+            id="priority"
+            name="priority"
+            required
+            aria-describedby="priority-error"
+            class="mt-1 w-full rounded-lg border border-slate-400 bg-white p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-slate-800"
+          >
+            <option value="">Selecione</option>
+            <option>Baixa</option>
+            <option>Média</option>
+            <option>Alta</option>
+          </select>
+          <p id="priority-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+        </div>
+      </div>
 
-            <div>
-                <label for="project-owner" class="block text-sm font-medium">Responsável</label>
-                <input id="project-owner" name="owner" type="text" required
-                    class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    aria-describedby="owner-error">
-                <p id="owner-error" class="mt-1 hidden text-xs text-red-600"></p>
-            </div>
+      <div>
+        <label for="deadline" class="text-sm">Prazo</label>
+        <input
+          id="deadline"
+          name="deadline"
+          type="date"
+          required
+          aria-describedby="deadline-error"
+          class="mt-1 w-full rounded-lg border border-slate-400 bg-transparent p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+        <p id="deadline-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+      </div>
 
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                    <label for="project-category" class="block text-sm font-medium">Categoria</label>
-                    <select id="project-category" name="category" required
-                        class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        aria-describedby="category-error">
-                        <option value="">Selecione</option>
-                        <option>Desenvolvimento</option>
-                        <option>Design</option>
-                        <option>Marketing</option>
-                        <option>Infraestrutura</option>
-                        <option>Segurança</option>
-                    </select>
-                    <p id="category-error" class="mt-1 hidden text-xs text-red-600"></p>
-                </div>
+      <div>
+        <label for="description" class="text-sm">Descrição</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="3"
+          required
+          minlength="10"
+          aria-describedby="description-error"
+          class="mt-1 w-full rounded-lg border border-slate-400 bg-transparent p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        ></textarea>
+        <p id="description-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+      </div>
 
-                <div>
-                    <label for="project-priority" class="block text-sm font-medium">Prioridade</label>
-                    <select id="project-priority" name="priority" required
-                        class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        aria-describedby="priority-error">
-                        <option value="">Selecione</option>
-                        <option value="baixa">Baixa</option>
-                        <option value="média">Média</option>
-                        <option value="alta">Alta</option>
-                    </select>
-                    <p id="priority-error" class="mt-1 hidden text-xs text-red-600"></p>
-                </div>
-            </div>
+      <button
+        id="save-project"
+        type="submit"
+        class="w-full rounded-lg bg-indigo-600 p-3 font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Cadastrar projeto
+      </button>
+    </form>
+  </dialog>
 
-            <div>
-                <label for="project-deadline" class="block text-sm font-medium">Prazo</label>
-                <input id="project-deadline" name="deadline" type="date" required
-                    class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    aria-describedby="deadline-error">
-                <p id="deadline-error" class="mt-1 hidden text-xs text-red-600"></p>
-            </div>
-
-            <div>
-                <label for="project-description" class="block text-sm font-medium">Descrição</label>
-                <textarea id="project-description" name="description" rows="3" required minlength="10"
-                    class="mt-1 w-full rounded-lg border border-slate-300 p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    aria-describedby="description-error"></textarea>
-                <p id="description-error" class="mt-1 hidden text-xs text-red-600"></p>
-            </div>
-
-            <button id="save-project" type="submit"
-                class="w-full rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white transition duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
-                Cadastrar projeto
-            </button>
-        </form>
-    </dialog>
-
-    <script type="module" src="/js/app.js"></script>
+  <script type="module" src="./js/app.js"></script>
 </body>
-
 </html>
