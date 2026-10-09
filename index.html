@@ -1,12 +1,299 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="css/style.css" rel="stylesheet">
-    <title>Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechFlow Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    
+
+<body class="min-h-screen bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100">
+
+  <div class="min-h-screen lg:flex">
+
+    <!-- Sidebar: fixa no celular e ao lado do conteúdo no desktop -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-40 flex w-60 -translate-x-full flex-col bg-slate-900 p-6 text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0"
+    >
+      <h2 class="text-2xl font-bold text-indigo-400">TechFlow</h2>
+      <p class="mt-2 text-sm text-slate-400">Gestão de projetos</p>
+
+      <nav class="mt-8 flex flex-col gap-2" aria-label="Menu principal">
+        <a
+          href="#dashboard"
+          class="rounded-lg bg-indigo-600 p-3 transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        >
+          Dashboard
+        </a>
+
+        <a
+          href="#projetos"
+          class="rounded-lg p-3 transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        >
+          Projetos
+        </a>
+      </nav>
+
+      <p class="mt-auto pt-6 text-xs text-slate-400">TechFlow © 2026</p>
+    </aside>
+
+    <button
+      id="overlay"
+      type="button"
+      aria-label="Fechar menu"
+      class="fixed inset-0 z-30 hidden bg-black/50 lg:hidden"
+    ></button>
+
+    <div class="min-w-0 flex-1">
+
+      <!-- Navbar -->
+      <header class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white p-4 sm:px-6 dark:border-slate-700 dark:bg-slate-800">
+        <div class="flex items-center gap-3">
+          <button
+            id="menu-button"
+            type="button"
+            aria-label="Abrir menu"
+            aria-controls="sidebar"
+            aria-expanded="false"
+            class="rounded-lg p-2 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 lg:hidden dark:hover:bg-slate-700"
+          >
+            ☰
+          </button>
+
+          <span class="font-bold">Painel de controle</span>
+        </div>
+
+        <input
+          id="search"
+          type="search"
+          aria-label="Pesquisar projetos"
+          placeholder="Pesquisar projetos..."
+          class="order-last w-full rounded-lg border border-slate-300 bg-slate-50 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 md:order-none md:w-64 dark:border-slate-600 dark:bg-slate-900"
+        >
+
+        <!-- Dropdown do usuário -->
+        <div id="user-area" class="relative">
+          <button
+            id="user-button"
+            type="button"
+            aria-controls="user-dropdown"
+            aria-expanded="false"
+            class="flex items-center gap-2 rounded-lg p-2 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:hover:bg-slate-700"
+          >
+            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">
+              AM
+            </span>
+            <span class="hidden text-sm sm:block">Artur Maia</span>
+            <span aria-hidden="true">▾</span>
+          </button>
+
+          <div
+            id="user-dropdown"
+            class="absolute right-0 z-20 mt-2 hidden w-56 rounded-xl border border-slate-200 bg-white p-4 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+          >
+            <p class="font-semibold">Artur Maia</p>
+            <p class="mb-4 text-xs text-slate-500 dark:text-slate-400">
+              Administrador
+            </p>
+
+            <label for="theme" class="text-sm">Tema</label>
+            <select
+              id="theme"
+              class="mt-2 w-full rounded-lg border border-slate-300 bg-white p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900"
+            >
+              <option value="light">Claro</option>
+              <option value="dark">Escuro</option>
+              <option value="system">Sistema</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <main id="dashboard" class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 2xl:p-10">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 class="text-2xl font-bold">Visão geral</h1>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Acompanhe os projetos da sua equipe.
+            </p>
+          </div>
+
+          <button
+            id="new-project"
+            type="button"
+            class="rounded-lg bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 active:scale-95"
+          >
+            + Novo projeto
+          </button>
+        </div>
+
+        <p
+          id="success"
+          role="status"
+          class="mt-4 hidden rounded-lg bg-emerald-100 p-3 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+        ></p>
+
+        <!-- Indicadores -->
+        <section aria-label="Indicadores" class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <article class="rounded-xl bg-white p-5 dark:bg-slate-800">
+            <h2 class="text-sm text-slate-500 dark:text-slate-400">Projetos ativos</h2>
+            <p id="active-count" class="mt-3 text-3xl font-bold text-indigo-600 dark:text-indigo-400">4</p>
+          </article>
+
+          <article class="rounded-xl bg-white p-5 dark:bg-slate-800">
+            <h2 class="text-sm text-slate-500 dark:text-slate-400">Projetos concluídos</h2>
+            <p class="mt-3 text-3xl font-bold text-emerald-600 dark:text-emerald-400">2</p>
+          </article>
+
+          <article class="rounded-xl bg-white p-5 dark:bg-slate-800">
+            <h2 class="text-sm text-slate-500 dark:text-slate-400">Tarefas pendentes</h2>
+            <p class="mt-3 text-3xl font-bold text-amber-600 dark:text-amber-400">18</p>
+          </article>
+
+          <article class="rounded-xl bg-white p-5 dark:bg-slate-800">
+            <h2 class="text-sm text-slate-500 dark:text-slate-400">Equipes</h2>
+            <p class="mt-3 text-3xl font-bold text-sky-600 dark:text-sky-400">3</p>
+          </article>
+        </section>
+
+        <section id="projetos" class="mt-8">
+          <h2 class="text-xl font-bold">Projetos</h2>
+
+          <!-- Os cards são criados pelo JavaScript -->
+          <div
+            id="project-list"
+            class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+          ></div>
+
+          <p id="empty" role="status" class="mt-4 hidden text-sm text-slate-500 dark:text-slate-400">
+            Nenhum projeto encontrado.
+          </p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal de cadastro -->
+  <dialog
+    id="modal"
+    aria-labelledby="modal-title"
+    class="m-auto max-h-[90vh] w-[calc(100%_-_2rem)] max-w-lg overflow-y-auto rounded-xl bg-white p-6 text-slate-800 backdrop:bg-black/60 dark:bg-slate-800 dark:text-slate-100"
+  >
+    <div class="flex items-center justify-between">
+      <h2 id="modal-title" class="text-xl font-bold">Novo projeto</h2>
+
+      <button
+        id="close-modal"
+        type="button"
+        aria-label="Fechar cadastro"
+        class="rounded-lg p-2 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:hover:bg-slate-700"
+      >
+        ✕
+      </button>
+    </div>
+
+    <form id="project-form" class="mt-4 space-y-3" novalidate>
+      <div>
+        <label for="name" class="text-sm">Nome</label>
+        <input
+          id="name"
+          name="name"
+          required
+          minlength="3"
+          aria-describedby="name-error"
+          class="mt-1 w-full rounded-lg border border-slate-400 bg-transparent p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+        <p id="name-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+      </div>
+
+      <div>
+        <label for="owner" class="text-sm">Responsável</label>
+        <input
+          id="owner"
+          name="owner"
+          required
+          aria-describedby="owner-error"
+          class="mt-1 w-full rounded-lg border border-slate-400 bg-transparent p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+        <p id="owner-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label for="category" class="text-sm">Categoria</label>
+          <select
+            id="category"
+            name="category"
+            required
+            aria-describedby="category-error"
+            class="mt-1 w-full rounded-lg border border-slate-400 bg-white p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-slate-800"
+          >
+            <option value="">Selecione</option>
+            <option>Desenvolvimento</option>
+            <option>Design</option>
+            <option>Marketing</option>
+            <option>Infraestrutura</option>
+            <option>Segurança</option>
+          </select>
+          <p id="category-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+        </div>
+
+        <div>
+          <label for="priority" class="text-sm">Prioridade</label>
+          <select
+            id="priority"
+            name="priority"
+            required
+            aria-describedby="priority-error"
+            class="mt-1 w-full rounded-lg border border-slate-400 bg-white p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-slate-800"
+          >
+            <option value="">Selecione</option>
+            <option>Baixa</option>
+            <option>Média</option>
+            <option>Alta</option>
+          </select>
+          <p id="priority-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+        </div>
+      </div>
+
+      <div>
+        <label for="deadline" class="text-sm">Prazo</label>
+        <input
+          id="deadline"
+          name="deadline"
+          type="date"
+          required
+          aria-describedby="deadline-error"
+          class="mt-1 w-full rounded-lg border border-slate-400 bg-transparent p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+        <p id="deadline-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+      </div>
+
+      <div>
+        <label for="description" class="text-sm">Descrição</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="3"
+          required
+          minlength="10"
+          aria-describedby="description-error"
+          class="mt-1 w-full rounded-lg border border-slate-400 bg-transparent p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        ></textarea>
+        <p id="description-error" class="mt-1 text-xs text-red-600 dark:text-red-400"></p>
+      </div>
+
+      <button
+        id="save-project"
+        type="submit"
+        class="w-full rounded-lg bg-indigo-600 p-3 font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Cadastrar projeto
+      </button>
+    </form>
+  </dialog>
+
+  <script type="module" src="./js/app.js"></script>
 </body>
 </html>
